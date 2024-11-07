@@ -5,12 +5,7 @@ on:
         - main
 jobs:
   sonarQube:
-    runs-on: ubuntu-latest
-    services:
-      sonarqube:
-        image: sonarqube:latest
-        ports:
-          - 9000:9000
+    runs-on: ubuntu-latest      
     
     steps:
     - name: Checkout code
@@ -23,7 +18,10 @@ jobs:
        
     - name: Build with Maven
       run: mvn clean verify
-
+    - name: Start SonarQube container
+      run: |
+        docker run -d -p 9000:9000 --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:latest
+        sleep 60  
     - name: Wait for SonarQube to be ready
       run: |
         for i in {1..30}; do
