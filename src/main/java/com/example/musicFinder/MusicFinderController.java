@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 public class MusicFinderController {
@@ -22,23 +26,22 @@ public class MusicFinderController {
 
     // Fetch lyrics from Lyrics.ovh API and clean newline characters
     private String getFormattedLyrics(String artist, String song) {
-        String apiUrl = "https://api.lyrics.ovh/v1/" + artist + "/" + song;
+        String apiUrlCore = "https://api.lyrics.ovh/v1/";
         RestTemplate restTemplate = new RestTemplate();
         try {
+            String encodedArtist = URLEncoder.encode(artist, StandardCharsets.UTF_8.toString());
+            String encodedSong = URLEncoder.encode(song, StandardCharsets.UTF_8.toString());
+            URI apiUrl = new URI(apiUrlCore + encodedArtist + "/" + encodedSong);
             // Fetch the raw JSON response
             String rawJson = restTemplate.getForObject(apiUrl, String.class);
-    
-            // Parse the JSON to extract the lyrics
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(rawJson);
+             // Parse the JSON to extract the lyrics
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(rawJson);
             String rawLyrics = jsonNode.get("lyrics").asText();
-    
             // Step 1: Remove carriage returns (\r)
             String formattedLyrics = rawLyrics.replaceAll("\\r", "");
-    
             // Step 2: Replace single newlines (\n) with a single <br>
             formattedLyrics = formattedLyrics.replaceAll("\\n+", "<br>");
-    
             // Step 3: Return the formatted lyrics
             return formattedLyrics.trim();
         } catch (Exception e) {
