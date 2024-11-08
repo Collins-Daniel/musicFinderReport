@@ -28,9 +28,9 @@ public class MusicFinderController {
         String apiUrlCore = "https://api.lyrics.ovh/v1/";
         RestTemplate restTemplate = new RestTemplate();
         try {
-            String encodedArtist = URLEncoder.encode(artist, StandardCharsets.UTF_8.toString());
+            String encodedArtist = URLEncoder.encode(artist, StandardCharsets.UTF_8.toString())  + "/";
             String encodedSong = URLEncoder.encode(song, StandardCharsets.UTF_8.toString());
-            URI apiUrl = new URI(apiUrlCore + encodedArtist + "/" + encodedSong);
+            URI apiUrl = new URI(apiUrlCore + encodedArtist + encodedSong);
             // Fetch the raw JSON response
             String rawJson = restTemplate.getForObject(apiUrl, String.class);
              // Parse the JSON to extract the lyrics
