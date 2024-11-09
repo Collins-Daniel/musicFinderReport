@@ -33,6 +33,7 @@
         <h2>Results:</h2>
         <div id="youtube"></div>
         <div id="lyrics"></div>
+        <div id="artistInfo"></div>
     </div>
 </div>
 
@@ -40,6 +41,7 @@
     function searchSong() {
         const artist = document.getElementById('artist').value;
         const song = document.getElementById('song').value;
+        const name = artist;
 
         fetch(`/song/${artist}/${song}`)
             .then(response => response.json())
@@ -57,6 +59,24 @@
                 `;
             })
             .catch(error => console.error('Error:', error));
+            
+        //fetch artist stuff
+        fetch(`/artist/${name}`)
+        .then(response => response.json())
+        .then(data => {
+            if(data.status){
+                document.getElementById('artistInfo').innerHTML = `
+                <h3>Artist Information:</h3>
+                <p>${data.error}</p>
+            `;
+            }else{  
+            document.getElementById('artistInfo').innerHTML = `
+                <h3>Artist Information:</h3>
+                <p>${data.extract}</p>
+            `;
+            }
+        })
+        .catch(error => console.error('Error:', error));
     }
 </script>
 
